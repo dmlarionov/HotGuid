@@ -7,8 +7,8 @@ using Xunit;
 
 namespace HotGuid.Tests
 {
-    public class HotGuidTests
-    {
+	public class HotGuidTests
+	{
 		private const long EpochTicks = 621355968000000000;
 
 		/// <summary>
@@ -82,11 +82,12 @@ namespace HotGuid.Tests
 		[InlineData(1)]
 		[InlineData(208)]
 		[InlineData(65535)]
-		private void TestHotGuidNewGuid(ushort shardCode)
+		[InlineData(4294967295)]
+		private void TestHotGuidNewGuid(uint shardKey)
 		{
 			//Arrange
 			var generator = HotGuidGenerator.Instance;
-			var items = Enumerable.Range(0, 25).Select(i => new { Id = generator.NewGuid(shardCode), Sort = i });
+			var items = Enumerable.Range(0, 25).Select(i => new { Id = generator.NewGuid(shardKey), Sort = i });
 			//Act
 			var sortedItems = items.OrderBy(x => x.Id).ToList();
 			//Assert
@@ -101,11 +102,12 @@ namespace HotGuid.Tests
 		[InlineData(1)]
 		[InlineData(208)]
 		[InlineData(65535)]
-		private void TestHotGuidNewSqlGuid(ushort shardCode)
+		[InlineData(4294967295)]
+		private void TestHotGuidNewSqlGuid(uint shardKey)
 		{
 			//Arrange
 			var generator = HotSqlGuidGenerator.Instance;
-			var items = Enumerable.Range(0, 25).Select(i => new { Id = new SqlGuid(generator.NewGuid(shardCode)), Sort = i });
+			var items = Enumerable.Range(0, 25).Select(i => new { Id = new SqlGuid(generator.NewGuid(shardKey)), Sort = i });
 			//Act
 			var sortedItems = items.OrderBy(x => x.Id).ToList();
 			//Assert
@@ -120,11 +122,12 @@ namespace HotGuid.Tests
 		[InlineData(1)]
 		[InlineData(208)]
 		[InlineData(65535)]
-		private void TestLocalDateIsUtcInGuid(ushort shardCode)
+		[InlineData(4294967295)]
+		private void TestLocalDateIsUtcInGuid(uint shardKey)
 		{
 			var localNow = DateTime.Now;
 			TestLocalDateIsUtcInGuidImpl(localNow,
-				HotGuidGenerator.Instance.NewGuid(localNow, shardCode));
+				HotGuidGenerator.Instance.NewGuid(localNow, shardKey));
 		}
 
 		[Theory]
@@ -132,11 +135,12 @@ namespace HotGuid.Tests
 		[InlineData(1)]
 		[InlineData(208)]
 		[InlineData(65535)]
-		private void TestLocalDateIsUtcInSqlGuid(ushort shardCode)
+		[InlineData(4294967295)]
+		private void TestLocalDateIsUtcInSqlGuid(uint shardKey)
 		{
 			var localNow = DateTime.Now;
 			TestLocalDateIsUtcInGuidImpl(localNow,
-				HotGuidGenerator.Instance.NewGuid(localNow, shardCode));
+				HotGuidGenerator.Instance.NewGuid(localNow, shardKey));
 		}
 
 		// ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
@@ -173,17 +177,18 @@ namespace HotGuid.Tests
 		[InlineData(1)]
 		[InlineData(208)]
 		[InlineData(65535)]
-		private void TestGuidToDateTimeIsUtc(ushort shardCode)
+		[InlineData(4294967295)]
+		private void TestGuidToDateTimeIsUtc(uint shardKey)
 		{
 			//Arrange
 			var expectedDateTime = DateTime.UtcNow;
 			//Act
 			var dateTime = HotGuidGenerator.Instance
-				.NewGuid(expectedDateTime, shardCode)
+				.NewGuid(expectedDateTime, shardKey)
 				.ToDateTime()
 				.GetValueOrDefault();
 			//Assert
-			Assert.Equal(expectedDateTime.Ticks, dateTime.Ticks);
+			Assert.Equal(TicksToSeconds(expectedDateTime.Ticks), TicksToSeconds(dateTime.Ticks));
 			Assert.Equal(expectedDateTime.Kind, dateTime.Kind);
 		}
 
@@ -203,9 +208,10 @@ namespace HotGuid.Tests
 		[InlineData(1)]
 		[InlineData(208)]
 		[InlineData(65535)]
-		private void TestUtcNowDoesNotThrowException(ushort shardCode)
+		[InlineData(4294967295)]
+		private void TestUtcNowDoesNotThrowException(uint shardKey)
 		{
-			HotGuidGenerator.Instance.NewGuid(DateTime.UtcNow, shardCode);
+			HotGuidGenerator.Instance.NewGuid(DateTime.UtcNow, shardKey);
 		}
 
 		[Theory]
@@ -213,9 +219,10 @@ namespace HotGuid.Tests
 		[InlineData(1)]
 		[InlineData(208)]
 		[InlineData(65535)]
-		private void TestLocalNowDoesNotThrowException(ushort shardCode)
+		[InlineData(4294967295)]
+		private void TestLocalNowDoesNotThrowException(uint shardKey)
 		{
-			HotGuidGenerator.Instance.NewGuid(DateTime.Now, shardCode);
+			HotGuidGenerator.Instance.NewGuid(DateTime.Now, shardKey);
 		}
 
 		[Theory]
@@ -223,9 +230,10 @@ namespace HotGuid.Tests
 		[InlineData(1)]
 		[InlineData(208)]
 		[InlineData(65535)]
-		private void TestUnixEpochDoesNotThrowException(ushort shardCode)
+		[InlineData(4294967295)]
+		private void TestUnixEpochDoesNotThrowException(uint shardKey)
 		{
-			HotGuidGenerator.Instance.NewGuid(EpochTicks, shardCode);
+			HotGuidGenerator.Instance.NewGuid(EpochTicks, shardKey);
 		}
 
 		[Theory]
@@ -233,10 +241,11 @@ namespace HotGuid.Tests
 		[InlineData(1)]
 		[InlineData(208)]
 		[InlineData(65535)]
-		private void TestBetweenUnixEpochAndNowDoesNotThrowException(ushort shardCode)
+		[InlineData(4294967295)]
+		private void TestBetweenUnixEpochAndNowDoesNotThrowException(uint shardKey)
 		{
 			HotGuidGenerator.Instance.NewGuid(
-				new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), shardCode);
+				new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), shardKey);
 		}
 
 		[Theory]
@@ -244,9 +253,10 @@ namespace HotGuid.Tests
 		[InlineData(1)]
 		[InlineData(208)]
 		[InlineData(65535)]
-		private void TestDateTimeKindUnspecifiedThrowsArgumentException(ushort shardCode)
+		[InlineData(4294967295)]
+		private void TestDateTimeKindUnspecifiedThrowsArgumentException(uint shardKey)
 		{
-			TestThrowsArgumentException(new DateTime(2000, 1, 1), shardCode);
+			TestThrowsArgumentException(new DateTime(2000, 1, 1), shardKey);
 		}
 
 		[Theory]
@@ -254,9 +264,10 @@ namespace HotGuid.Tests
 		[InlineData(1)]
 		[InlineData(208)]
 		[InlineData(65535)]
-		private void TestAfterNowThrowsArgumentException(ushort shardCode)
+		[InlineData(4294967295)]
+		private void TestAfterNowThrowsArgumentException(uint shardKey)
 		{
-			TestThrowsArgumentException(DateTime.UtcNow.AddSeconds(1), shardCode);
+			TestThrowsArgumentException(DateTime.UtcNow.AddSeconds(1), shardKey);
 		}
 
 		[Theory]
@@ -264,9 +275,10 @@ namespace HotGuid.Tests
 		[InlineData(1)]
 		[InlineData(208)]
 		[InlineData(65535)]
-		private void TestAfterNowReturnsNullDateTime(ushort shardCode)
+		[InlineData(4294967295)]
+		private void TestAfterNowReturnsNullDateTime(uint shardKey)
 		{
-			TestReturnsNullDateTime(DateTime.UtcNow.AddSeconds(1).Ticks, shardCode);
+			TestReturnsNullDateTime(DateTime.UtcNow.AddSeconds(1).Ticks, shardKey);
 		}
 
 		[Theory]
@@ -274,10 +286,11 @@ namespace HotGuid.Tests
 		[InlineData(1)]
 		[InlineData(208)]
 		[InlineData(65535)]
-		private void TestBeforeUnixEpochThrowsArgumentException(ushort shardCode)
+		[InlineData(4294967295)]
+		private void TestBeforeUnixEpochThrowsArgumentException(uint shardKey)
 		{
 			TestThrowsArgumentException(
-				new DateTime(EpochTicks - 1), shardCode);
+				new DateTime(EpochTicks - 1), shardKey);
 		}
 
 		[Theory]
@@ -285,26 +298,27 @@ namespace HotGuid.Tests
 		[InlineData(1)]
 		[InlineData(208)]
 		[InlineData(65535)]
-		private void TestBeforeUnixEpochReturnsNullDateTime(ushort shardCode)
+		[InlineData(4294967295)]
+		private void TestBeforeUnixEpochReturnsNullDateTime(uint shardKey)
 		{
-			TestReturnsNullDateTime(EpochTicks - 1, shardCode);
+			TestReturnsNullDateTime(EpochTicks - 1, shardKey);
 		}
 
 		// Test the internal mechanism that bypasses date validation
-		private static void TestReturnsNullDateTime(long ticks, ushort shardCode)
+		private static void TestReturnsNullDateTime(long ticks, uint shardKey)
 		{
 			//Arrange
-			var guid = HotGuidGenerator.Instance.NewGuid(ticks, shardCode);
-			var sqlGuid = HotGuidGenerator.Instance.NewGuid(ticks, shardCode);
+			var guid = HotGuidGenerator.Instance.NewGuid(ticks, shardKey);
+			var sqlGuid = HotGuidGenerator.Instance.NewGuid(ticks, shardKey);
 			//Act & Assert
 			Assert.Null(guid.ToDateTime());
 			Assert.Null(sqlGuid.ToDateTime());
 		}
 
-		private static void TestThrowsArgumentException(DateTime timestamp, ushort shardCode)
+		private static void TestThrowsArgumentException(DateTime timestamp, uint shardKey)
 		{
 			Assert.Throws<ArgumentException>(() =>
-				HotGuidGenerator.Instance.NewGuid(timestamp, shardCode));
+				HotGuidGenerator.Instance.NewGuid(timestamp, shardKey));
 		}
 
 		[Theory]
@@ -312,12 +326,13 @@ namespace HotGuid.Tests
 		[InlineData(1)]
 		[InlineData(208)]
 		[InlineData(65535)]
-		private void TestSqlGuidToDateTime(ushort shardCode)
+		[InlineData(4294967295)]
+		private void TestSqlGuidToDateTime(uint shardKey)
 		{
 			//Arrange
 			var expectedDateTime = DateTime.UtcNow;
 			//Act
-			var dateTime = HotSqlGuidGenerator.Instance.NewGuid(expectedDateTime, shardCode).ToDateTime()
+			var dateTime = HotSqlGuidGenerator.Instance.NewGuid(expectedDateTime, shardKey).ToDateTime()
 				.GetValueOrDefault();
 			//Assert
 			Assert.Equal(expectedDateTime.Ticks, dateTime.Ticks);
@@ -328,16 +343,17 @@ namespace HotGuid.Tests
 		[InlineData(1)]
 		[InlineData(208)]
 		[InlineData(65535)]
-		private void TestGuidBigDateRange(ushort shardCode)
+		[InlineData(4294967295)]
+		private void TestGuidBigDateRange(uint shardKey)
 		{
 			//Arrange
 			var generator = HotGuidGenerator.Instance;
 			var items = new List<Guid>();
 			//Act
-			for (var i = 1970+1; i < DateTime.Today.Year; i++)	// testing for 1970 is unreliable, because it depends on local timezone
+			for (var i = 1970 + 1; i < DateTime.Today.Year; i++)    // testing for 1970 is unreliable, because it depends on local timezone
 			{
 				items.Add(generator.NewGuid(new DateTime(i, 1, 1, 0, 0, 0,
-					DateTimeKind.Local), shardCode));
+					DateTimeKind.Local), shardKey));
 			}
 			//Assert
 			Assert.True(items.SequenceEqual(items.OrderBy(x => x)));
@@ -348,7 +364,8 @@ namespace HotGuid.Tests
 		[InlineData(1)]
 		[InlineData(208)]
 		[InlineData(65535)]
-		private void TestSqlGuidBigDateRange(ushort shardCode)
+		[InlineData(4294967295)]
+		private void TestSqlGuidBigDateRange(uint shardKey)
 		{
 			//Arrange
 			var generator = HotSqlGuidGenerator.Instance;
@@ -357,7 +374,7 @@ namespace HotGuid.Tests
 			for (var i = 1970; i < DateTime.Today.Year; i++)
 			{
 				items.Add(generator.NewGuid(new DateTime(i, 1, 1, 0, 0, 0,
-					DateTimeKind.Utc), shardCode));
+					DateTimeKind.Utc), shardKey));
 			}
 
 			//Assert
@@ -369,12 +386,13 @@ namespace HotGuid.Tests
 		[InlineData(1)]
 		[InlineData(208)]
 		[InlineData(65535)]
-		private void TestSqlGuidGenerator(ushort shardCode)
+		[InlineData(4294967295)]
+		private void TestSqlGuidGenerator(uint shardKey)
 		{
 			// Arrange
 			var now = DateTime.UtcNow;
 			// Act
-			var stamp = HotSqlGuidGenerator.Instance.NewSqlGuid(now, shardCode).ToDateTime();
+			var stamp = HotSqlGuidGenerator.Instance.NewSqlGuid(now, shardKey).ToDateTime();
 			// Assert
 			Assert.Equal(now, stamp);
 		}
@@ -384,14 +402,15 @@ namespace HotGuid.Tests
 		[InlineData(1)]
 		[InlineData(208)]
 		[InlineData(65535)]
-		private void TestExtractShardCodeFromGuid(ushort shardCode)
+		[InlineData(4294967295)]
+		private void TestExtractShardKeyFromGuid(uint shardKey)
 		{
 			//Arrange
 			var generator = HotGuidGenerator.Instance;
 			//Act
-			var item = generator.NewGuid(shardCode);
+			var item = generator.NewGuid(shardKey);
 			//Assert
-			Assert.Equal(shardCode, item.ExtractShardCode());
+			Assert.Equal(shardKey, item.ExtractShardKey());
 		}
 
 		[Theory]
@@ -399,14 +418,22 @@ namespace HotGuid.Tests
 		[InlineData(1)]
 		[InlineData(208)]
 		[InlineData(65535)]
-		private void TestExtractShardCodeFromSqlGuid(ushort shardCode)
+		[InlineData(4294967295)]
+		private void TestExtractShardKeyFromSqlGuid(uint shardKey)
 		{
 			//Arrange
 			var generator = HotSqlGuidGenerator.Instance;
 			//Act
-			var item = generator.NewSqlGuid(shardCode);
+			var item = generator.NewSqlGuid(shardKey);
 			//Assert
-			Assert.Equal(shardCode, item.ExtractShardCode());
+			Assert.Equal(shardKey, item.ExtractShardKey());
 		}
+
+		/// <summary>
+		/// Covert ticks to seconds since Unix Epoch
+		/// </summary>
+		/// <param name="ticks">Ticks</param>
+		/// <returns>Seconds</returns>
+		private static int TicksToSeconds(long ticks) => (int)(ticks >> 32);
 	}
 }

@@ -6,25 +6,24 @@ namespace HotGuid
     {
 		private HotSqlGuidGenerator() { }
 
-		public override Guid NewGuid(long timestamp, ushort shardCode) =>
-		base.NewGuid(timestamp, shardCode).ToSqlGuid().Value;
+		public override Guid NewGuid(long timestamp, uint shardKey) =>
+		base.NewGuid(timestamp, shardKey).ToSqlGuid().Value;
 
 		/// <summary>
-		///     Returns a guid for the value of UtcNow
+		/// Returns a guid for the value of UtcNow
 		/// </summary>
 		/// <returns>Sequential SQL guid</returns>
-		public SqlGuid NewSqlGuid(ushort shardCode) =>
-			new(NewGuid(shardCode));
+		public SqlGuid NewSqlGuid(uint shardKey) =>
+			new(NewGuid(shardKey));
 
 		/// <summary>
-		///     Takes a date time parameter to encode in a sequential SQL guid
+		/// Takes a date time parameter to encode in a sequential SQL guid
 		/// </summary>
 		/// <param name="timestamp">
-		///     Timestamp that must not be in unspecified kind and must be between the unix epoch and now to be
-		///     considered valid
+		/// Timestamp that must not be in unspecified kind and must be between the unix epoch and now to be considered valid
 		/// </param>
 		/// <returns>Sequential SQL guid</returns>
-		public SqlGuid NewSqlGuid(DateTime timestamp, ushort shardCode) =>
-			new(NewGuid(timestamp, shardCode));
+		public SqlGuid NewSqlGuid(DateTime timestamp, uint shardKey) =>
+			new(NewGuid(timestamp, shardKey));
 	}
 }
