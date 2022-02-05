@@ -182,12 +182,64 @@ namespace HotGuid.Tests
 		[InlineData(4294967295)]
 		private void TestHotGuidExtractShardKey(uint shardKey)
 		{
-			//Arrange
+			// Arrange
 			var generator = HotGuidGenerator.Instance;
-			//Act
+
+			// Act
 			var item = generator.NewGuid(shardKey);
-			//Assert
+
+			// Assert
 			Assert.Equal(shardKey, item.ExtractShardKey());
+		}
+
+		[Theory]
+		[InlineData(0)]
+		[InlineData(1)]
+		[InlineData(208)]
+		[InlineData(65535)]
+		[InlineData(32465535)]
+		[InlineData(4294967295)]
+		private void TestStepOver20380119031407(uint shardKey)
+		{
+			// Arrange
+			var generator = HotGuidGenerator.Instance;
+
+			// Act
+			var item0 = generator.NewGuid(shardKey, new DateTime(2038, 1, 19, 3, 14, 6));
+			var item1 = generator.NewGuid(shardKey, new DateTime(2038, 1, 19, 3, 14, 7));
+			var item2 = generator.NewGuid(shardKey, new DateTime(2038, 1, 19, 3, 14, 8));
+			var item3 = generator.NewGuid(shardKey, new DateTime(2038, 1, 19, 3, 14, 9));
+
+			// Assert 
+			Assert.Equal((uint)2147483646, item0.ExtractUnixTimestamp());
+			Assert.Equal((uint)2147483647, item1.ExtractUnixTimestamp());	// int.MaxValue
+			Assert.Equal((uint)2147483648, item2.ExtractUnixTimestamp());
+			Assert.Equal((uint)2147483649, item3.ExtractUnixTimestamp());
+		}
+
+		[Theory]
+		[InlineData(0)]
+		[InlineData(1)]
+		[InlineData(208)]
+		[InlineData(65535)]
+		[InlineData(32465535)]
+		[InlineData(4294967295)]
+		private void TestStepOver21060207062815(uint shardKey)
+        {
+			// Arrange
+			var generator = HotGuidGenerator.Instance;
+
+			// Act
+			var item0 = generator.NewGuid(shardKey, new DateTime(2106, 2, 7, 6, 28, 14));
+			var item1 = generator.NewGuid(shardKey, new DateTime(2106, 2, 7, 6, 28, 15));
+			var item2 = generator.NewGuid(shardKey, new DateTime(2106, 2, 7, 6, 28, 16));
+			var item3 = generator.NewGuid(shardKey, new DateTime(2106, 2, 7, 6, 28, 17));
+
+			// Assert 
+			Assert.Equal((uint)4294967294, item0.ExtractUnixTimestamp());
+			Assert.Equal((uint)4294967295, item1.ExtractUnixTimestamp());	// uint.MaxValue
+			Assert.Equal((uint)0, item2.ExtractUnixTimestamp());
+			Assert.Equal((uint)1, item3.ExtractUnixTimestamp());
 		}
 	}
 }

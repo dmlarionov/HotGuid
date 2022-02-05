@@ -1,6 +1,9 @@
-﻿using System.Security;
+﻿using System.Runtime.CompilerServices;
+using System.Security;
 using System.Security.Cryptography;
 using System.Text;
+
+[assembly: InternalsVisibleTo("HotGuid.Tests")]
 
 namespace HotGuid
 {
@@ -56,18 +59,27 @@ namespace HotGuid
 		/// Singleton instance of the generator
 		/// </summary>
 		public static HotGuidGenerator Instance => Lazy.Value;
-		
+
 		/// <summary>
-		/// Returns a Hot Guid
+		/// Returns a Hot Guid generated for a given shard key
 		/// </summary>
 		/// <param name="shardKey">The shard code to keep in ID value</param>
 		/// <returns>Hot Guid</returns>
-		public Guid NewGuid(uint shardKey)
-		{
-			var unixTimestamp = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+		public Guid NewGuid(uint shardKey) => NewGuid(shardKey, DateTime.UtcNow);
+
+		/// <summary>
+		/// Returns a Hot Guid generated for a given shard key and DateTime
+		/// </summary>
+		/// <param name="shardKey">The shard code to keep in ID value</param>
+		/// <param name="dateTime">DateTime</param>
+		/// <returns>Hot Guid</returns>
+		public Guid NewGuid(uint shardKey, DateTime dateTime)
+        {
+			var unixTimestamp = (uint)dateTime.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
 
 			// only use low order 3 bytes of increment
 			var increment = Interlocked.Increment(ref _increment) & 0x00ffffff;
+
 			return new Guid(
 				BitConverter.GetBytes(unixTimestamp).Concat(
 					_machinePid.Concat(

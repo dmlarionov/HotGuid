@@ -71,8 +71,8 @@ namespace HotGuid
 		/// </summary>
 		/// <param name="guid">Hot Guid</param>
 		/// <returns>Unix timestamp</returns>
-		public static int ExtractUnixTimestamp(this Guid guid)
-			=> BitConverter.ToInt32(guid.ToByteArray());
+		public static uint ExtractUnixTimestamp(this Guid guid)
+			=> BitConverter.ToUInt32(guid.ToByteArray());
 
 		/// <summary>
 		/// Take shard key out of Hot Guid value
