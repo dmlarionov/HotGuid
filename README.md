@@ -64,7 +64,15 @@ To have 1% probability of getting collision between generators working each at f
 
 Check https://en.wikipedia.org/wiki/Birthday_problem, see generalized formula at https://stackoverflow.com/questions/184869/are-guid-collisions-possible.
 
+## What happens on January 19, 2038?
+
+Due to unix timestamp 32-bit overflow the first 4-bytes will start from 0. This is well known fact for many other timestamp based IDs, including Object Id in MongoDB.
+
+Due to reusing the same timestamp value range (after January 19, 2038) there are collision probability between the old IDs and IDs generated during the next 60+ years cycle, but you are still protected by 5-byte random value and incrementing counter which makes it extremely low if you still generate very much under 16,777,216 (2^24) ID values per second.
+
+So, for ID generation rates of thousands per second, you might reuse the same timestamp ranges over and over through hundreds of years.
+
 Gratitude
 ---------
 
-This code is mostly borrowed from SequentialGuid project (https://github.com/buvinghausen/SequentialGuid/blob/master/README.md). I really appreciate Brian Buvinghausen work, which includes a bunch of tests, that kept me a lot of time to make this project.
+Part of my code is borrowed from SequentialGuid project (https://github.com/buvinghausen/SequentialGuid/blob/master/README.md). I appreciate Brian Buvinghausen work.
