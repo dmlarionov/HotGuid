@@ -225,7 +225,7 @@ namespace HotGuid.Tests
 		[InlineData(32465535)]
 		[InlineData(4294967295)]
 		private void TestStepOver21060207062815(uint shardKey)
-        {
+		{
 			// Arrange
 			var generator = HotGuidGenerator.Instance;
 

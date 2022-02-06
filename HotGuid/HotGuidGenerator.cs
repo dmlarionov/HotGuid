@@ -3,15 +3,13 @@ using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 
-[assembly: InternalsVisibleTo("HotGuid.Tests")]
-
 namespace HotGuid
 {
 	/// <summary>
 	/// Generates time-ordered ID in Guid / UUID format (Hot Guid) based on 4-byte shard key
 	/// </summary>
 	public sealed class HotGuidGenerator
-    {
+	{
 		// We use singleton to avoid having 2 instances of generator with the same machine & process PID.
 		private static readonly Lazy<HotGuidGenerator> Lazy =
 			new(() => (Activator.CreateInstance(typeof(HotGuidGenerator), true) as HotGuidGenerator)!);
@@ -74,7 +72,7 @@ namespace HotGuid
 		/// <param name="dateTime">DateTime</param>
 		/// <returns>Hot Guid</returns>
 		public Guid NewGuid(uint shardKey, DateTime dateTime)
-        {
+		{
 			var unixTimestamp = (uint)dateTime.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
 
 			// only use low order 3 bytes of increment
