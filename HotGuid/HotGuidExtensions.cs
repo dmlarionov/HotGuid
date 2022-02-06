@@ -3,6 +3,9 @@ using System.Data.SqlTypes;
 
 namespace HotGuid
 {
+	/// <summary>
+	/// Extension methods for Guids
+	/// </summary>
     public static class HotGuidExtensions
     {
 		private static readonly IReadOnlyDictionary<byte, byte> ToSqlGuidMap;
@@ -40,7 +43,7 @@ namespace HotGuid
 					ToGuidMap.ToDictionary(d => d.Value, d => d.Key));
 		}
 
-		// <summary>
+		/// <summary>
 		/// Take a SqlGuid and re-sequence to a Guid that will sort in the same order
 		/// </summary>
 		/// <param name="sqlGuid">Any SqlGuid</param>
