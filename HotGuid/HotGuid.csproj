@@ -4,6 +4,7 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<Authors>Dmitriy Larionov</Authors>
 		<Copyright>Copyright © 2022 Dmitriy Larionov</Copyright>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageProjectUrl>https://github.com/dmlarionov/HotGuid/blob/master/README.md</PackageProjectUrl>
 		<PackageTags>HotGuid;UUID;Guid</PackageTags>
@@ -12,6 +13,7 @@
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -19,8 +21,13 @@
 		<LangVersion>10.0</LangVersion>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<None Include="../LICENSE.txt" Pack="true" PackagePath="LICENSE.txt"/>
+		<None Include="../README.md" Pack="true" PackagePath="README.md"/>
 	</ItemGroup>
 
 	<ItemGroup>
