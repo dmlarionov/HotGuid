@@ -20,11 +20,17 @@ Check the articles:
 
 How to use a shard key?
 ---------------------
-One case is a request routing in the backend between clusters. For instance, having a GraphQL API with `node(id: ID!)` field or REST API with `{id}` path parameter to get an entity, in the backend you take a region key out from ID and route the request to a regional cluster.
+Primary case is the sharding / partitioning in a database. You can use the shard key extracted from ID to query the logical partition / chunk of data by using key in query parameter.
 
-Another case is the sharding / partitioning in a database. You can use the partition key extracted from ID to query the logical partition / chunk of data. Keeping of such a key inside ID makes it possible while serving incoming request with ID only.
+Another case is the request routing at the API gateway level. For instance, having a GraphQL API with `node(id: ID!)` field or REST API with `{id}` path parameter, in the backend you can take a region key out from ID and route request to the proper regional cluster.
 
-A combination of cases (routing + database sharding) can be implemented. For instance, [UN M.49 region codes](https://unstats.un.org/unsd/methodology/m49/), which might be a reasonable choice for request routing, are 10 bit long. Having a 4-byte shard key, you can use another 22 bits or the whole 32-bit value as a shard / partition key at the database level. The remaining 22 bits support quite high key cardinality.
+### Two level sharding example
+
+A combination of cases (request routing + database sharding) can be implemented by combining region key and shard key into single shard key value inside ID.
+
+For instance, [UN M.49 region codes](https://unstats.un.org/unsd/methodology/m49/), which might be a reasonable choice for request routing, are 10 bit long. Having a 4-byte shard key, you can use another 22 bits or the whole 32-bit value as a shard / partition key at the database level. The remaining 22 bits support quite high key cardinality.
+
+![sharding](./.attachments/sharding.png)
 
 ## How to use the generator?
 
@@ -77,9 +83,9 @@ Nothing happen because we use unsigned 4-byte timestamp value (`uint`), which is
 
 Due to 32-bit overflow the unix timestamp will start from 0.
 
-Due to reusing the same value range collision probability for IDs increased since the current date-time 4-byte representation reaches the first seen date-time 4-byte representation (probably, after the year 2158).
+Due to reusing the same range collision probability for IDs increased since the current timestamp reaches the first seen timestamp (after the year 2158 if you start using Hot Guid in 2022).
 
-But you are still protected from collisions by 5-byte random value and incrementing counter which makes it low if you still generate several orders under 16,777,216 (2^24) ID values per second.
+But you are still protected from collisions by 5-byte random value and 3-byte incrementing counter which makes it low if you still generate several orders under 16,777,216 (2^24) ID values per second.
 
 Gratitude
 ---------
