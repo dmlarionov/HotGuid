@@ -30,7 +30,7 @@ A combination of cases (request routing + database sharding) can be implemented 
 
 For instance, [UN M.49 region codes](https://unstats.un.org/unsd/methodology/m49/), which might be a reasonable choice for request routing, are 10 bit long. Having a 4-byte shard key, you can use another 22 bits or the whole 32-bit value as a shard / partition key at the database level. The remaining 22 bits support quite high key cardinality.
 
-![sharding](./.attachments/sharding.png)
+![sharding](https://raw.githubusercontent.com/dmlarionov/HotGuid/master/.attachments/sharding.png)
 
 ## How to use the generator?
 
@@ -69,7 +69,7 @@ Take a note, that using several generators in your distributed system (usually y
 
 To have 1% probability of getting collision between generators working each at full capacity you need 23,786,20 generator instances according to the formula:
 
-![probability_formula](./.attachments/probability_formula.png)
+![probability_formula](https://raw.githubusercontent.com/dmlarionov/HotGuid/master/.attachments/probability_formula.png)
 
 Check https://en.wikipedia.org/wiki/Birthday_problem, see generalized formula at https://stackoverflow.com/questions/184869/are-guid-collisions-possible.
 
